@@ -1,0 +1,10 @@
+name: Diff Word documents
+on:
+  pull_request:
+    paths: ['**/*.docx']
+  workflow_dispatch:
+jobs:
+  docx-diff:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: SuffolkLITLab/ALActions/word_diff@main

@@ -1,0 +1,47 @@
+name: ALKiln tests
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      tags:
+        required: false
+        description: 'Optional. A tag expression that chooses which tests to run (https://cucumber.io/docs/cucumber/api/#tag-expressions)'
+      show_docker_output:
+        required: false
+        default: false
+        type: boolean
+        description: 'Show the docker logs while building the test server. This might show sensitive config information.'
+
+jobs:
+  interview-testing:
+    # Run once for pushes in this repository and once for pull requests from
+    # forks, instead of twice for a pull request from a branch here.
+    if: (
+          github.event_name != 'pull_request'
+          && ! github.event.pull_request.head.repo.fork
+        ) || (
+          github.event_name == 'pull_request'
+          && github.event.pull_request.head.repo.fork
+        )
+    runs-on: ubuntu-latest
+    name: Run interview tests
+    steps:
+      - uses: actions/checkout@v4
+      # Starts a temporary Docassemble server inside GitHub and installs this
+      # branch, and its pyproject.toml dependencies, on it. No server of your
+      # own is needed and the tests never touch one.
+      - name: Start the isolated temporary Docassemble server on GitHub
+        id: github_server
+        uses: SuffolkLITLab/ALKiln/action_for_github_server@v5
+        with:
+          SHOW_DOCKER_OUTPUT: "${{ github.event.inputs.show_docker_output }}"
+          CONFIG_CONTENTS: "${{ secrets.CONFIG_CONTENTS }}"
+      - name: Run ALKiln tests
+        uses: SuffolkLITLab/ALKiln@v5
+        with:
+          SERVER_URL: "${{ steps.github_server.outputs.SERVER_URL }}"
+          DOCASSEMBLE_DEVELOPER_API_KEY: "${{ steps.github_server.outputs.DOCASSEMBLE_DEVELOPER_API_KEY }}"
+          INSTALL_METHOD: "server"
+          ALKILN_TAG_EXPRESSION: "${{ github.event.inputs.tags }}"

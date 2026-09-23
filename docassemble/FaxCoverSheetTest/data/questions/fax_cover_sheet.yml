@@ -1,0 +1,434 @@
+---
+include:
+  - docassemble.AssemblyLine:assembly_line.yml
+  - docassemble.ALAnyState:any_state.yml
+  - docassemble.MassAccess:massaccess.yml
+---
+metadata:
+  title: >-
+    Fax cover sheet
+  short title: >-
+    Fax cover sheet
+  description: |-
+    A fax cover sheet is a document that accompanies a fax transmission. It provides essential information about the sender, recipient, and the contents of the fax.
+  can_I_use_this_form: |
+    You can use this form whenever you need to send a fax. It's helpful for ensuring that your fax is received correctly and provides context for the recipient.
+  before_you_start: |
+    ## Before you get started
+    - Gather the necessary information for both the sender and recipient.
+    - Make sure you have the details of the subject and any comments you want to include.
+
+    ## When you are finished
+    - Review the information for accuracy before sending.
+    - Print the cover sheet and attach it to your fax.
+  when_you_are_finished: |
+    After completing the fax cover sheet, ensure that all information is correct. Then, attach it to your fax document before sending it off. Keep a copy for your records.
+  efiling_enabled: False
+  integrated_efiling: False
+  integrated_email_filing: False
+  requires_notarization: False
+  unlisted: False
+  landing_page_url: >-
+    https://courtformsonline.org/
+  maturity: production
+  estimated_completion_minutes: ""
+  estimated_completion_delta: ""
+  LIST_topics:
+    - "CO-00-00-00-00"
+  tags:
+    - "CO-00-00-00-00"
+  authors:
+    - Court Forms Online
+  original_form: []
+  original_form_published_on: ""
+  allowed_courts: []
+  typical_role: "unknown"
+  al_weaver_version: "2.3.1"
+  generated_on: "2026-09-20"
+  languages:
+    - en
+  jurisdiction: "NAM-US-US+MA"
+  review_date: 2026-09-20
+  form_titles:
+    - Fax cover sheet
+  form_numbers: []
+  update_notes: ""
+---
+code: |
+  # This controls the default country and list of states in address field questions
+  AL_DEFAULT_COUNTRY = "US"
+---
+code: |
+  # This controls the default state in address field questions
+  AL_DEFAULT_STATE = "MA"
+---
+code: |
+  github_repo_name = 'docassemble-FaxCoverSheet'
+---
+template: interview_short_title
+content: |
+  Prepare your fax cover sheet now!
+---
+code: |
+  al_form_type = "other"
+---
+id: alweaver assemblyline settings
+initial: True
+code: |
+  # These exact-name variables drive the reusable next-steps DOCX shell and
+  # are editable in Weaver's AssemblyLine settings panel.
+  al_next_steps_enabled = True
+  al_next_steps_intro_prompt = 'Prepare your fax cover sheet now!'
+  al_next_steps_title = 'Fax cover sheet'
+  al_next_steps_document_title = 'fax cover sheet'
+  al_next_steps_document_purpose = 'fax'
+  al_next_steps_help_organization = ''
+  al_next_steps_help_url = ''
+  al_next_steps_generate_qr_code = False
+  al_next_steps_what_happens_next = 'After completing the fax cover sheet, ensure that all information is correct. Then, attach it to your fax document before sending it off. Keep a copy for your records.'
+  al_next_steps_what_can_decision_maker_do = 'The decision maker can review the contents of the fax and respond accordingly. They may take action based on the information provided in your fax.'
+  al_next_steps_what_happens_if_i_win = 'If your fax leads to a favorable outcome, you may receive a confirmation or approval related to your request. Be prepared to take further action based on the response.'
+---
+objects:
+  - hospital: ALPeopleList.using(ask_number=True,target_number=1)
+  - users: ALPeopleList.using(ask_number=True,target_number=1)
+---
+sections:
+  - sender: Sender & Contacts
+  - case_details: Case Details
+  - hospital: Hospital Information
+  - review_fax_cover_sheet: Review your answers
+---
+#################### Interview order #####################
+comment: |
+  Controls order and branching logic for questions specific to this form
+id: interview_order_fax_cover_sheet
+mandatory: True
+code: |
+  al_intro_screen
+  fax_cover_sheet_intro
+  # Below sets the user_role and user_ask_role by asking a question.
+  # You can set user_ask_role directly instead to either 'plaintiff' or 'defendant'
+  user_ask_role
+  nav.set_section("sender")
+  student_attorney
+  nav.set_section("case_details")
+  hospital_fax
+  comment
+  nav.set_section("hospital")
+  set_progress(54)
+  hospital.gather()
+  hospital[0].phone_number
+  signature_date
+  # Store anonymous data for analytics / statistics
+  store_variables_snapshot(
+      persistent=True,
+      data={
+          "zip": showifdef("users[0].address.zip"),
+          "reached_interview_end": True,
+      },
+  )
+  fax_cover_sheet_preview_question
+  basic_questions_signature_flow
+  set_progress(100)
+  fax_cover_sheet_download
+---
+id: Fax cover sheet intro
+continue button field: fax_cover_sheet_intro
+question: |
+  Fax cover sheet
+subquestion: |
+  ## Before you get started
+  - Gather the necessary information for both the sender and recipient.
+  - Make sure you have the details of the subject and any comments you want to include.
+
+  ## When you are finished
+  - Review the information for accuracy before sending.
+  - Print the cover sheet and attach it to your fax.
+
+  You can use this form whenever you need to send a fax. It's helpful for ensuring that your fax is received correctly and provides context for the recipient.
+---
+id: Sender Information
+question: |
+  Sender Information
+subquestion: |
+  Please provide the sender's details.
+fields:
+  - "Student attorney name": student_attorney
+  - "Sender fax number": from_fax
+  - "Sender phone number": from_phone
+---
+id: Fax Details
+question: |
+  Fax Details
+subquestion: |
+  Fill in the relevant fax information.
+fields:
+  - "Hospital fax number": hospital_fax
+  - "Date of fax": date
+  - "Fax subject line": subject
+---
+id: Comments
+question: |
+  Comments
+subquestion: |
+  Any additional comments regarding the fax.
+fields:
+  - "Additional comments": comment
+    input type: area
+---
+comment: |
+  The questions below are copies of the questions in AssemblyLine's
+  ql_baseline.yml, rewritten to name this interview's own objects instead of the
+  generic `x`. Edit them freely: they replace the AssemblyLine versions. Delete
+  one to go back to the AssemblyLine wording.
+---
+id: hospital names
+sets:
+  - hospital[i].name.first
+  - hospital[i].name.last
+  - hospital[i].name.middle
+  - hospital[i].name.suffix
+question: |
+  % if hasattr(hospital, 'ask_number') and hospital.ask_number and hospital.target_number == 1:
+  Name of hospital
+  % else:
+  Name of the ${ ordinal(i) } hospital
+  % endif
+fields:
+  - code: |
+      hospital[i].name_fields()
+---
+id: hospital phone number
+question: |
+  What is ${ hospital[i] }'s phone number?
+fields:
+  - Phone: hospital[i].phone_number
+    datatype: al_international_phone
+---
+id: users names
+sets:
+  - users[i].name.first
+  - users[i].name.last
+  - users[i].name.middle
+  - users[i].name.suffix
+question: |
+  % if i == 0 and al_person_answering == "user":
+  What is your name?
+  % elif al_form_type in ['starts_case', 'existing_case', 'appeal']:
+  Who is the ${ ordinal(i) } person on your side of the case?
+  % else:
+  What is the name of the ${ ordinal(i) } person who is adding their
+  name to this form with you?
+  % endif
+fields:
+  - code: |
+      users[i].name_fields()
+---
+id: preview fax_cover_sheet
+question: |
+  Preview your form before you sign it
+subquestion: |
+  Here is a preview of the form you will sign on the next page.
+
+  ${ al_recipient_bundle.as_pdf(key='preview') }
+
+  Open the form preview in a new tab. Use the "Edit answers" button to edit your
+  answers.
+
+  ${ action_button_html(url_action('review_fax_cover_sheet'), label=word('Edit answers'), color='info') }
+
+  Return to this interview tab to continue and sign your form.
+continue button field: fax_cover_sheet_preview_question
+---
+code: |
+  signature_fields = ['users[0].signature']
+---
+id: fax cover sheet review screen
+event: review_fax_cover_sheet
+question: |
+  Review your answers
+review:
+  - Edit: student_attorney
+    button: |
+      **Sender Information**
+
+      Student attorney name: ${ showifdef('student_attorney') }
+
+      Sender fax number: ${ showifdef('from_fax') }
+
+      Sender phone number: ${ showifdef('from_phone') }
+  - Edit: hospital_fax
+    button: |
+      **Fax Details**
+
+      Hospital fax number: ${ showifdef('hospital_fax') }
+
+      Date of fax: ${ showifdef('date') }
+
+      Fax subject line: ${ showifdef('subject') }
+  - Edit: comment
+    button: |
+      **Comments**
+
+      Additional comments: ${ single_paragraph(comment) if defined('comment') else '' }
+  - Edit: hospital.revisit
+    button: |
+      **Hospital**
+
+      % for item in hospital:
+        * ${ item }
+      % endfor
+  - Edit: student_attorney
+    button: |
+      **Student attorney name**
+
+      Student attorney name: ${ showifdef('student_attorney') }
+  - Edit: from_fax
+    button: |
+      **Sender fax number**
+
+      Sender fax number: ${ showifdef('from_fax') }
+  - Edit: from_phone
+    button: |
+      **Sender phone number**
+
+      Sender phone number: ${ showifdef('from_phone') }
+  - Edit: hospital_fax
+    button: |
+      **Hospital fax number**
+
+      Hospital fax number: ${ showifdef('hospital_fax') }
+  - Edit: date
+    button: |
+      **Date of fax**
+
+      Date of fax: ${ showifdef('date') }
+  - Edit: subject
+    button: |
+      **Fax subject line**
+
+      Fax subject line: ${ showifdef('subject') }
+  - Edit: comment
+    button: |
+      **Additional comments**
+
+      Additional comments: ${ single_paragraph(comment) if defined('comment') else '' }
+  - Edit: users.revisit
+    button: |
+      **Users**
+
+      % for item in users:
+        * ${ item }
+      % endfor
+---
+id: edit hospital
+continue button field: hospital.revisit
+question: |
+  Edit hospital
+subquestion: |
+  ${ hospital.table }
+
+  ${ hospital.add_action() }
+---
+table: hospital.table
+rows: hospital
+columns:
+  - Name: |
+      row_item.name_full() if defined("row_item.name.first") else ""
+  - Phone number: |
+      row_item.phone_number if defined("row_item.phone_number") else ""
+edit:
+  - name.first
+  - phone_number
+confirm: True
+---
+id: edit users
+continue button field: users.revisit
+question: |
+  Edit users
+subquestion: |
+  ${ users.table }
+
+  ${ users.add_action() }
+---
+table: users.table
+rows: users
+columns:
+  - Signature: |
+      row_item.signature if defined("row_item.signature") else ""
+edit: True
+confirm: True
+---
+id: download fax_cover_sheet
+event: fax_cover_sheet_download
+question: |
+  All done
+subquestion: |
+  Thank you ${users}. Your form is ready to download and deliver.
+
+  Use the options on this page to view, download and send your form. Use the
+  "Edit answers" button to fix any mistakes.
+
+  ${ action_button_html(url_action('review_fax_cover_sheet'), label=word('Edit answers'), color='info') }
+
+  ${ al_user_bundle.download_list_html() }
+
+  ${ al_user_bundle.send_button_html(show_editable_checkbox=False) }
+
+progress: 100
+---
+# ALDocument objects specify the metadata for each template
+objects:
+  - fax_cover_sheet_Post_interview_instructions: ALDocument.using(filename="fax_cover_sheet_next_steps.docx", enabled=al_next_steps_enabled, has_addendum=False)
+  - fax_cover_sheet_attachment: ALDocument.using(filename="fax_cover_sheet", enabled=True, has_addendum=False)
+---
+# Bundles group the ALDocuments into separate downloads, such as for court and for the user
+objects:
+  - al_user_bundle: ALDocumentBundle.using(elements=[fax_cover_sheet_Post_interview_instructions, fax_cover_sheet_attachment], filename="fax_cover_sheet", enabled=True)
+  - al_recipient_bundle: ALDocumentBundle.using(elements=[fax_cover_sheet_attachment], filename="fax_cover_sheet", enabled=True)
+---
+template: fax_cover_sheet_Post_interview_instructions.title
+content: |
+  Instructions
+---
+template: fax_cover_sheet_attachment.title
+content: |
+  Fax cover sheet
+---
+template: al_user_bundle.title
+content: |
+  All forms to download for your records
+---
+template: al_recipient_bundle.title
+content: |
+  All forms to file
+---
+# Each attachment defines a key in an ALDocument. We use `i` as the placeholder here so the
+# same template is used for "preview" and "final" keys, and logic in the template checks
+# the value of `i` to show or hide the user's signature
+attachment:
+  name: Post-interview-Instructions
+  filename: fax_cover_sheet_next_steps
+  docx template file: fax_cover_sheet_next_steps.docx
+  variable name: fax_cover_sheet_Post_interview_instructions[i]
+  skip undefined: True
+  tagged pdf: True
+---
+attachment:
+  name: fax cover sheet
+  filename: fax_cover_sheet
+  variable name: fax_cover_sheet_attachment[i]
+  skip undefined: True
+  pdf template file: Fax_cover_sheet.pdf
+  fields:
+      - "hospital_name": ${ hospital[0] }
+      - "student_attorney": ${ student_attorney }
+      - "hospital_fax": ${ hospital_fax }
+      - "from_fax": ${ from_fax }
+      - "from_phone": ${ from_phone }
+      - "hospital_phone": ${ hospital[0].phone_number }
+      - "date": ${ date }
+      - "subject": ${ subject }
+      - "comment": ${ comment }
+      - "user_signature": ${ users[0].signature_if_final(i) }

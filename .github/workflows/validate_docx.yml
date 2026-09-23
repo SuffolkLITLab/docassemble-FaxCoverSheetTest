@@ -1,0 +1,12 @@
+name: Validate DOCX templates
+on:
+  pull_request:
+    paths: ['**/*.docx']
+  push:
+    paths: ['**/*.docx']
+  workflow_dispatch:
+jobs:
+  validate-templates:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: SuffolkLITLab/ALActions/valid_jinja2@main

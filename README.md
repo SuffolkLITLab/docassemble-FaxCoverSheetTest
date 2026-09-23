@@ -1,2 +1,3 @@
-# docassemble-FaxCoverSheetTest
-A docassemble project for FaxCoverSheet.
+# docassemble.FaxCoverSheetTest
+
+A docassemble extension.
