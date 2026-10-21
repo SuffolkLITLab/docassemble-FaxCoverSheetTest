@@ -28,7 +28,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Run interview tests
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       # Starts a temporary Docassemble server inside GitHub and installs this
       # branch, and its pyproject.toml dependencies, on it. No server of your
       # own is needed and the tests never touch one.
